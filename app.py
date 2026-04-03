@@ -613,3 +613,301 @@ with st.expander("🧠 Cognitive Layer (v4.3)"):
     except Exception as e:
         st.error(f"❌ Error fetching cognitive status: {e}")
         st.info("💡 Cognitive layer status will appear here when API is available")
+
+# ============================================
+# 🍔 FOOD ORDERING TAB — Just Burger Style
+# ============================================
+with st.expander("🍔 Pedir Comida — Just Burger Style"):
+    st.markdown("""
+    <style>
+    /* Just Burger Style Overrides */
+    .jb-promo-banner {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        padding: 15px 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #0f172a;
+    }
+    .jb-promo-banner h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.3rem;
+        font-weight: 900;
+    }
+    .jb-promo-banner p {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .jb-category-tabs {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 10px 0;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #334155;
+    }
+    .jb-category-tab {
+        padding: 10px 20px;
+        background: #1e293b;
+        border: 2px solid #334155;
+        border-radius: 25px;
+        cursor: pointer;
+        white-space: nowrap;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .jb-category-tab:hover, .jb-category-tab.active {
+        background: #fbbf24;
+        border-color: #fbbf24;
+        color: #0f172a;
+    }
+    .jb-product-card {
+        background: #1e293b;
+        border: 2px solid #334155;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    .jb-product-card:hover {
+        border-color: #fbbf24;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2);
+    }
+    .jb-badge {
+        display: inline-block;
+        background: #ef4444;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .jb-product-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        margin-bottom: 5px;
+    }
+    .jb-product-desc {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+    .jb-product-price {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #fbbf24;
+    }
+    .jb-product-original-price {
+        text-decoration: line-through;
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-left: 10px;
+    }
+    .jb-add-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        border: none;
+        border-radius: 8px;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.2s ease;
+    }
+    .jb-add-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+    }
+    .jb-cart-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+        z-index: 1000;
+        cursor: pointer;
+    }
+    .jb-section-title {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #fbbf24;
+        margin: 30px 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #334155;
+    }
+    .jb-combo-prompt {
+        background: #334155;
+        padding: 10px 15px;
+        border-radius: 8px;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        font-style: italic;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Promo Banner
+    st.markdown("""
+    <div class="jb-promo-banner">
+        <h3>🎉 30% OFF en tu primer pedido por la App</h3>
+        <p>Usa el código: <strong>HOLAJUST</strong> | <a href="#" style="color:#0f172a;font-weight:700;">Descargar →</a></p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Initialize session state for cart
+    if 'jb_cart' not in st.session_state:
+        st.session_state.jb_cart = []
+    
+    # Category selection
+    categories = [
+        "🍔 BURGER DEL MES!",
+        "🔥 PROMOS EXCLUSIVAS",
+        "⭐ Favoritas",
+        "🍔 Especialidades",
+        "🍗 Chicken",
+        "👶 Kids",
+        "🍟 Appetizers",
+        "🥤 Para Tomar",
+        "➕ Extras",
+        "🍰 Postres",
+        "🍺 Licores"
+    ]
+    
+    selected_category = st.selectbox("Categoría", categories, index=0)
+    
+    # Product data by category
+    products = {
+        "🍔 BURGER DEL MES!": [
+            {"name": "Burger del Mes", "desc": "Doble carne 180g, queso cheddar, bacon crocante, salsa especial de la casa", "price": 8990, "original": 11990, "badge": "-25%", "combo": True},
+        ],
+        "🔥 PROMOS EXCLUSIVAS": [
+            {"name": "Promo Just Doble", "desc": "2 Burgers Clásicas + 2 Papas Medianas + 2 Bebidas", "price": 14990, "original": 19990, "badge": "-25%", "combo": False},
+            {"name": "Promo Familiar", "desc": "4 Burgers a elección + 4 Papas + 4 Bebidas", "price": 27990, "original": 35990, "badge": "-22%", "combo": False},
+            {"name": "Promo Pareja", "desc": "2 Burgers Especiales + 2 Papas + 2 Bebidas", "price": 16990, "original": 21990, "badge": "-23%", "combo": False},
+        ],
+        "⭐ Favoritas": [
+            {"name": "Burger Clásica", "desc": "Carne 180g, queso cheddar, lechuga, tomate, salsa Just", "price": 6990, "original": None, "badge": None, "combo": True},
+            {"name": "Burger Doble Queso", "desc": "Doble carne 360g, triple queso cheddar, bacon", "price": 9990, "original": None, "badge": "MÁS VENDIDA", "combo": True},
+            {"name": "Burger BBQ Bacon", "desc": "Carne 180g, bacon, aros de cebolla, salsa BBQ", "price": 8490, "original": None, "badge": None, "combo": True},
+        ],
+        "🍔 Especialidades": [
+            {"name": "Burger Trufada", "desc": "Carne Angus, queso brie, cebolla caramelizada, aceite de trufa", "price": 11990, "original": None, "badge": "PREMIUM", "combo": False},
+            {"name": "Burger Blue Cheese", "desc": "Carne 180g, queso azul, nueces, rúcula, reducción de balsámico", "price": 10490, "original": None, "badge": None, "combo": False},
+            {"name": "Burger Vegana", "desc": "Beyond Meat, queso vegano, palta, tomate seco", "price": 9990, "original": None, "badge": "NUEVA", "combo": False},
+        ],
+        "🍗 Chicken": [
+            {"name": "Chicken Burger", "desc": "Pechuga crocante, lechuga, tomate, mayo", "price": 7490, "original": None, "badge": None, "combo": True},
+            {"name": "Chicken Wings x6", "desc": "Alitas de pollo en salsa BBQ o Buffalo", "price": 6990, "original": None, "badge": None, "combo": False},
+            {"name": "Nuggets x8", "desc": "Nuggets de pollo crocantes con salsa", "price": 4990, "original": None, "badge": None, "combo": False},
+        ],
+        "👶 Kids": [
+            {"name": "Mini Burger Kids", "desc": "Mini burger + papas + jugo + juguete", "price": 5990, "original": None, "badge": None, "combo": False},
+            {"name": "Chicken Nuggets Kids", "desc": "6 Nuggets + papas + jugo", "price": 4990, "original": None, "badge": None, "combo": False},
+        ],
+        "🍟 Appetizers": [
+            {"name": "Papas Just", "desc": "Papas fritas crocantes con sal y especias", "price": 2990, "original": None, "badge": None, "combo": False},
+            {"name": "Papas con Cheddar", "desc": "Papas + cheddar fundido + bacon", "price": 3990, "original": None, "badge": None, "combo": False},
+            {"name": "Aros de Cebolla", "desc": "Aros de cebolla crocantes x8", "price": 3490, "original": None, "badge": None, "combo": False},
+            {"name": "Tequeños x6", "desc": "Tequeños de queso con salsa de ajo", "price": 3990, "original": None, "badge": None, "combo": False},
+        ],
+        "🥤 Para Tomar": [
+            {"name": "Bebida 500ml", "desc": "Coca-Cola, Sprite, Fanta", "price": 1990, "original": None, "badge": None, "combo": False},
+            {"name": "Jugo Natural", "desc": "Naranja o Manzana 500ml", "price": 2490, "original": None, "badge": None, "combo": False},
+            {"name": "Agua 500ml", "desc": "Con o sin gas", "price": 990, "original": None, "badge": None, "combo": False},
+            {"name": "Milkshake", "desc": "Vainilla, Chocolate o Frutilla", "price": 3490, "original": None, "badge": None, "combo": False},
+        ],
+        "➕ Extras": [
+            {"name": "Queso Extra", "desc": "Porción adicional de queso cheddar", "price": 990, "original": None, "badge": None, "combo": False},
+            {"name": "Bacon Extra", "desc": "Tiras de bacon crocante", "price": 1490, "original": None, "badge": None, "combo": False},
+            {"name": "Salsa Especial", "desc": "Salsa Just de la casa", "price": 490, "original": None, "badge": None, "combo": False},
+        ],
+        "🍰 Postres": [
+            {"name": "Brownie", "desc": "Brownie de chocolate con helado", "price": 3490, "original": None, "badge": None, "combo": False},
+            {"name": "Churros x4", "desc": "Churros rellenos de dulce de leche", "price": 2990, "original": None, "badge": None, "combo": False},
+        ],
+        "🍺 Licores": [
+            {"name": "Cerveza Artesanal", "desc": "IPA o Golden Ale 500ml", "price": 3990, "original": None, "badge": None, "combo": False},
+            {"name": "Cerveza Nacional", "desc": "Cristal, Kunstmann, Austral", "price": 2490, "original": None, "badge": None, "combo": False},
+        ]
+    }
+    
+    # Display products for selected category
+    cat_key = selected_category
+    if cat_key in products:
+        for i, product in enumerate(products[cat_key]):
+            # Combo prompt
+            if product.get("combo"):
+                st.markdown('<div class="jb-combo-prompt">💡 Hazla Combo agregando Fries + Bebida por $2,990</div>', unsafe_allow_html=True)
+            
+            # Product card
+            col1, col2 = st.columns([3, 1])
+            
+            with col1:
+                if product.get("badge"):
+                    badge_color = "#ef4444" if "%" in product["badge"] else "#fbbf24"
+                    st.markdown(f'<span style="background:{badge_color};color:white;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700;">{product["badge"]}</span>', unsafe_allow_html=True)
+                
+                st.markdown(f'<div class="jb-product-name">{product["name"]}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="jb-product-desc">{product["desc"]}</div>', unsafe_allow_html=True)
+                
+                price_html = f'<span class="jb-product-price">${product["price"]:,}</span>'
+                if product.get("original"):
+                    price_html += f'<span class="jb-product-original-price">${product["original"]:,}</span>'
+                st.markdown(price_html, unsafe_allow_html=True)
+            
+            with col2:
+                if st.button("➕", key=f"add_{i}_{cat_key}", help=f"Agregar {product['name']}"):
+                    st.session_state.jb_cart.append({**product, "qty": 1})
+                    st.success("✅")
+            
+            st.markdown("---")
+    
+    # Cart Section
+    if st.session_state.jb_cart:
+        st.markdown('<div class="jb-section-title">🛒 Tu Carrito</div>', unsafe_allow_html=True)
+        
+        total = 0
+        for i, item in enumerate(st.session_state.jb_cart):
+            col1, col2, col3 = st.columns([3, 1, 1])
+            with col1:
+                st.write(f"**{item['name']}**")
+            with col2:
+                st.write(f"${item['price']:,}")
+            with col3:
+                if st.button("❌", key=f"remove_{i}"):
+                    st.session_state.jb_cart.pop(i)
+                    st.rerun()
+            total += item['price']
+        
+        st.markdown("---")
+        st.markdown(f"### Total: **${total:,}**")
+        
+        # Checkout buttons
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("💬 WhatsApp", type="primary"):
+                items_text = "\n".join([f"• {item['name']}" for item in st.session_state.jb_cart])
+                msg = f"🍔 Pedido Just Burger\n\n{items_text}\n\nTotal: ${total:,}"
+                st.code(f"https://wa.me/56912345678?text={msg}", language=None)
+        with col2:
+            if st.button("✈️ Telegram", type="primary"):
+                items_text = "\n".join([f"• {item['name']}" for item in st.session_state.jb_cart])
+                msg = f"🍔 Pedido Just Burger\n\n{items_text}\n\nTotal: ${total:,}"
+                st.code(f"https://t.me/SmarterChat_bot?text={msg}", language=None)
+        with col3:
+            if st.button("💳 Flow.cl", type="primary"):
+                st.info("Redirigiendo a Flow.cl...")
