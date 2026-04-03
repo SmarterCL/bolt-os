@@ -522,3 +522,94 @@ st.markdown(
     f"API: `{API_URL}` | "
     f"Codespace: [bookish-engine](https://bookish-engine-pjwg9p75wjq5hrg7q.github.dev/)"
 )
+
+# ============================================
+# COGNITIVE LAYER TAB (v4.3)
+# ============================================
+with st.expander("🧠 Cognitive Layer (v4.3)"):
+    st.subheader("🧠 Capa Cognitiva - Estado de Activación")
+    
+    try:
+        # Get cognitive status from API
+        cognitive_status = requests.get(f"{API_URL}/cognitive/status", timeout=5).json()
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric(
+                "Ready to Activate",
+                "✅ YES" if cognitive_status.get("ready") else "⏳ NO",
+                f"{cognitive_status.get('conditions_met', 0)}/{cognitive_status.get('conditions_total', 3)} conditions"
+            )
+        
+        with col2:
+            st.metric(
+                "Total Events",
+                cognitive_status.get("total_events", 0),
+                "Target: 200"
+            )
+        
+        with col3:
+            st.metric(
+                "Real Events",
+                cognitive_status.get("real_events", 0),
+                "Target: 50"
+            )
+        
+        st.markdown("---")
+        
+        # Progress bars
+        st.subheader("📊 Activation Conditions")
+        
+        total = cognitive_status.get("total_events", 0)
+        real = cognitive_status.get("real_events", 0)
+        sandbox = cognitive_status.get("sandbox_rate", 0)
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Total Events", f"{total}/200")
+            st.progress(min(total / 200, 1.0))
+        
+        with col2:
+            st.metric("Real Events", f"{real}/50")
+            st.progress(min(real / 50, 1.0))
+        
+        with col3:
+            st.metric("Sandbox Rate", f"{sandbox}%")
+            st.progress(min(sandbox / 45, 1.0) if sandbox <= 45 else 1.0)
+        
+        st.markdown("---")
+        
+        # Cognitive layer status
+        st.subheader("🔌 Cognitive Services")
+        
+        cog_layer = cognitive_status.get("cognitive_layer", {})
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            bookish = cog_layer.get("bookish", {})
+            if bookish.get("available"):
+                st.success(f"✅ Bookish ({bookish.get('mode', 'unknown')})")
+            else:
+                st.error("❌ Bookish (offline)")
+        
+        with col2:
+            emdash = cog_layer.get("emdash", {})
+            if emdash.get("available"):
+                st.success(f"✅ Emdash ({emdash.get('mode', 'unknown')})")
+            else:
+                st.error("❌ Emdash (offline)")
+        
+        # Activation instructions
+        if cognitive_status.get("ready"):
+            st.success("🚀 Cognitive layer is ready to activate!")
+            st.code("docker compose --profile cognitive up -d", language="bash")
+        else:
+            st.info("⏳ Continue capturing events to activate cognitive layer")
+            st.markdown(f"**Missing:** {3 - cognitive_status.get('conditions_met', 0)} conditions")
+    
+    except Exception as e:
+        st.error(f"❌ Error fetching cognitive status: {e}")
+        st.info("💡 Cognitive layer status will appear here when API is available")
