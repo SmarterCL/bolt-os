@@ -23,8 +23,8 @@ API_URL = os.getenv("API_URL", "http://89.116.23.167:8002")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "http://89.116.23.167:8003")
 DB_HOST = os.getenv("DB_HOST", "89.116.23.167")
 DB_NAME = os.getenv("DB_NAME", "smarter_os")
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "REDACTED")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "REDACTED")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 # ============================================
 # PAGE CONFIG
