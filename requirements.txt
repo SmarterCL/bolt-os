@@ -1,0 +1,9 @@
+# 🦞 BOLT OS - SmarterOS Control Panel 24x7
+# requirements.txt
+
+streamlit>=1.32.0
+requests>=2.31.0
+pandas>=2.0.0
+plotly>=5.18.0
+psycopg2-binary>=2.9.0
+redis>=5.0.0
